@@ -1,0 +1,65 @@
+[6/11, 8:46 PM] Suji.K: import yfinance as yf
+
+class StockPortfolio:
+    def __init__(self):
+        self.portfolio = {}
+
+    def add_stock(self, symbol, shares):
+        if symbol in self.portfolio:
+            self.portfolio[symbol] += shares
+        else:
+            self.portfolio[symbol] = shares
+        print(f"Added {shares} shares of {symbol}.")
+
+    def remove_stock(self, symbol, shares):
+        if symbol in self.portfolio:
+            self.portfolio[symbol] -= shares
+            if self.portfolio[symbol] <= 0:
+                del self.portfolio[symbol]
+                print(f"Removed all shares of {symbol}.")
+            else:
+                print(f"Removed {shares} shares of {symbol}.")
+        else:
+            print(f"{symbol} not in portfolio.")
+
+    def view_portfolio(self):
+        if not self.portfolio:
+            print("Portfolio is empty.")
+            return
+
+        total_value = 0
+        print("\n--- Portfolio Summary ---")
+        for symbol, shares in self.portfolio.items():
+            stock = yf.Ticker(symbol)
+            data = stock.history(period="1d")
+            price = data["Close"].iloc[-1]
+            value = price * shares
+            total_value += value
+            print(f"{symbol}: {shares} shares × ${price:.2f} = ${value:.2f}")
+        print(f"Total Portfolio Value: ${total_value:.2f}\n")
+
+# ---------------------------
+# Example usage
+# ---------------------------
+portfolio = StockPortfolio()
+
+portfolio.add_stock("AAPL", 5)
+portfolio.add_stock("GOOGL", 2)
+portfolio.view_portfolio()
+
+portfolio.remove_stock("AAPL", 2)
+portfolio.view_portfolio()
+[6/11, 8:47 PM] Suji.K: Added 5 shares of AAPL.
+Added 2 shares of GOOGL.
+
+--- Portfolio Summary ---
+AAPL: 5 shares × $195.30 = $976.50
+GOOGL: 2 shares × $178.45 = $356.90
+Total Portfolio Value: $1,333.40
+
+Removed 2 shares of AAPL.
+
+--- Portfolio Summary ---
+AAPL: 3 shares × $195.30 = $585.90
+GOOGL: 2 shares × $178.45 = $356.90
+Total Portfolio Value: $942.80
